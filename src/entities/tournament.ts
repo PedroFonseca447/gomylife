@@ -18,6 +18,10 @@ export class Tournament{
         })
     }
 
+    public static restore(props: propsTournament){
+        return new Tournament(props);
+    }
+
     public get id(){
         return this.props.id;
     }

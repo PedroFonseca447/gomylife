@@ -1,3 +1,4 @@
+import type { SquadProps } from "./squad.js";
 import type { propsTournament } from "./tournament.js";
 
 export type GameProps = {
@@ -9,6 +10,8 @@ export type GameProps = {
   stadiumName: string;
   homeScore: number;
   awayScore: number;
+  homeSquad: SquadProps;
+  awaySquad: SquadProps;
 };
 
 export class Game {
@@ -23,7 +26,10 @@ export class Game {
     awayTeamName: string,
     stadiumName: string,
     homeScore: number,
-    awayScore: number
+    awayScore: number,
+    homeSquad: SquadProps,
+    awaySquad: SquadProps,
+    
   ) {
     return new Game({
       id: crypto.randomUUID().toString(),
@@ -34,7 +40,13 @@ export class Game {
       stadiumName,
       homeScore,
       awayScore,
+      homeSquad,
+      awaySquad,
     });
+  }
+
+  public static restore(props: GameProps) {
+    return new Game(props);
   }
 
   public get id() {
@@ -71,5 +83,13 @@ export class Game {
 
   public get awayScore(){
     return this.props.awayScore;
+  }
+
+  public get homeSquad(){
+    return this.props.homeSquad;
+  }
+
+  public get awaySquad(){
+    return this.props.awaySquad;
   }
 }
