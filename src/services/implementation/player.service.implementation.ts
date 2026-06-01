@@ -9,7 +9,7 @@ export class PlayerServiceImplementation implements PlayerService{
         return new PlayerServiceImplementation(repository);
    }
 
-   public async addStatsByPlayer(id: string, stats: PlayerGameStatsDTO): Promise<PlayerStatsDTO> {
+   public async addStatsByPlayer(id: string, stats: PlayerGameStatsDTO): Promise<void> {
         
         const aPlayer = await this.repository.find(id);
 
@@ -20,16 +20,7 @@ export class PlayerServiceImplementation implements PlayerService{
         aPlayer.addGameStats(stats);
         
         await this.repository.update(aPlayer);
-
-        const playerStats: PlayerStatsDTO = {
-          name: aPlayer.name,
-          id: aPlayer.id,
-          totalAssists: aPlayer.totalAssists,
-          totalGoals: aPlayer.totalGoals,
-          totalRedCards: aPlayer.totalRedCards,
-          totalYellowCards: aPlayer.totalYellowCards,
-        }
-        return playerStats;
+        
    }
 
    public async list(): Promise<PlayerStatsDTO[]>{
