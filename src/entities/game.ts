@@ -45,7 +45,7 @@ export class Game {
     });
   }
 
-  public static restore(props: GameProps) {
+  public static restore(props: GameProps) { // construtor feito para persistir os dados no banco de dados, ele recebe os dados do banco e restaura a entidade
     return new Game(props);
   }
 

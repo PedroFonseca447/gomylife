@@ -4,6 +4,24 @@ indicar e descrever que métodos vamos ter na aplicação, exemplo um de procura
 */
 
 
+
+export type matchDTO ={
+    reference: string,
+    playersSquad: SquadPlayerDTO[],
+}
+
+
+export type SquadPlayerDTO = {
+    playerId: string,
+    goalsScored: number,
+    assists: number,
+    yellowCards: number,
+    redCards: number,
+    shirtNumber: number,
+    position: string,
+}
+
+
 export type gameDTO = { 
     id: string;
     data: string;
@@ -27,6 +45,8 @@ export type listGamesDTO ={
     tournamentObject: tournamentDTO;
     homeTeamName: string;
     awayTeamName: string;
+    homeSquad: matchDTO;
+    awaySquad: matchDTO;
     stadiumName: string;
     homeScore: number;
     awayScore: number;
