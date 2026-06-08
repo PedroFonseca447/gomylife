@@ -10,6 +10,7 @@ export type SquadPlayerProps = {
 
 export type SquadProps ={
     reference: "home" | "away",
+    gameId: string,
     playersSquad: SquadPlayerProps[],
 }
 
@@ -17,9 +18,10 @@ export class Squad{
     private constructor(readonly props: SquadProps){
     }
 
-    public static create(reference: "home" | "away", playersSquad: SquadPlayerProps[]){
+    public static create(reference: "home" | "away", gameId: string, playersSquad: SquadPlayerProps[]){
         return new Squad({
             reference,
+            gameId,
             playersSquad,
         })
     }
@@ -31,7 +33,9 @@ export class Squad{
     public get reference(){
         return this.props.reference;
     }
-
+    public get gameId(){
+        return this.props.gameId;
+    }
     public get playersSquad(){
         return this.props.playersSquad;
     }

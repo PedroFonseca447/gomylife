@@ -45,7 +45,8 @@ export class GameServiceImplementation implements GameService {
       homeTeamName: game.homeTeamName,
       awayTeamName: game.awayTeamName,
       homeSquad: {
-        reference: game.homeTeamName,
+        reference:"home",
+        gameId: game.id,
         playersSquad: game.homeSquad.playersSquad.map((player) => ({
           playerId: player.playerId,
           goalsScored: player.goalsScored,
@@ -57,7 +58,8 @@ export class GameServiceImplementation implements GameService {
         })),
       },
       awaySquad: {
-        reference: game.awayTeamName,
+        reference: "away",
+        gameId: game.id,
         playersSquad: game.awaySquad.playersSquad.map((player) => ({
           playerId: player.playerId,
           goalsScored: player.goalsScored,
