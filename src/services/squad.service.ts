@@ -6,5 +6,4 @@ export type SquadDTO = {
     }
 export interface SquadService{
     getSquad(gameId: string, reference: "home" | "away"): Promise<SquadDTO>;
-    
 }

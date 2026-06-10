@@ -7,7 +7,6 @@ export type propsTournament = {
 
 export class Tournament{
     private constructor(readonly props: propsTournament){
-
     }
 
     public static create(id: string, name: string, country: string){
