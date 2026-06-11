@@ -10,6 +10,32 @@ generator client {
 }
 
 datasource db {
-  provider = "postgresql"
-  url      = env("DATABASE_URL")
+  provider = "mongodb"
 }
+
+
+model Tournament{
+  id String @id @map("_id") @db.ObjectId
+  name String
+  country String
+  gameId String @unique @db.ObjectId
+  game Game @relation("gameID", fields: [gameId], references: [id])
+}
+
+
+model Player {
+  id String @id @map("_id") @db.ObjectId
+  name String
+  totalGoals Int @default(0)
+  totalYellowCards Int @default(0)
+  totalRedCards Int @default(0)
+  totalAssists Int @default(0)
+}
+
+
+model Game{
+  id String @id @map("_id") @db.ObjectId
+  tournament Tournament? @relation("gameID")
+
+}
+
