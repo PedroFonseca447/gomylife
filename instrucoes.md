@@ -121,6 +121,18 @@ model Course {
   enrollments Enrollment[]
 }
 
+model Post {
+  id          String     @id @default(auto()) @map("_id") @db.ObjectId
+  categoryIDs String[]   @db.ObjectId
+  categories  Category[] @relation(fields: [categoryIDs], references: [id])
+}
+model Category {
+  id      String   @id @default(auto()) @map("_id") @db.ObjectId
+  name    String
+  postIDs String[] @db.ObjectId
+  posts   Post[]   @relation(fields: [postIDs], references: [id])
+}
+
 model Enrollment {
   id        String @id @default(auto()) @map("_id") @db.ObjectId
 

@@ -18,9 +18,9 @@ model Tournament{
   id String @id @map("_id") @db.ObjectId
   name String
   country String
-  gameId String @unique @db.ObjectId
-  game Game @relation("gameID", fields: [gameId], references: [id])
+  games Game[]
 }
+
 
 
 model Player {
@@ -30,12 +30,48 @@ model Player {
   totalYellowCards Int @default(0)
   totalRedCards Int @default(0)
   totalAssists Int @default(0)
+  squads SquadPlayer[]
 }
 
 
 model Game{
   id String @id @map("_id") @db.ObjectId
-  tournament Tournament? @relation("gameID")
+  data String
+  tournamentId String @db.ObjectId
+  tournament   Tournament @relation(fields: [tournamentId], references: [id])
+  homeTeamName String
+  awayTeamName String
+  stadiumName String
+  homeScore Int @default(0)
+  awayScore Int @default(0)
+  homeSquadId String @db.ObjectId
+  homeSquad   Squad  @relation("HomeSquad", fields: [homeSquadId], references: [id])
 
+  awaySquadId String @db.ObjectId
+  awaySquad   Squad  @relation("AwaySquad", fields: [awaySquadId], references: [id])
 }
 
+model Squad{
+    id String @id @default(auto()) @map("_id") @db.ObjectId
+    reference String
+    homeSquadGame Game[] @relation("HomeSquad")
+    awaySquadGame Game[] @relation("AwaySquad") // na parte de relacoes para indicar que o jogo possui 2 quasd diferentes
+    players SquadPlayer[]
+}
+
+// Model intermediario da relacao N:N entre Squad e Player.
+// Usei ele em vez de String[] porque o mesmo jogador pode aparecer em varios squads
+// e aqui fica facil guardar dados dessa participacao, como numero da camisa,
+// posicao, titular/reserva ou estatisticas daquele jogador naquele squad.
+model SquadPlayer {
+    id String @id @default(auto()) @map("_id") @db.ObjectId
+
+    squadId String @db.ObjectId
+    squad Squad @relation(fields: [squadId], references: [id])
+
+    playerId String @db.ObjectId
+    player Player @relation(fields: [playerId], references: [id])
+
+    shirtNumber Int?
+    position String?
+}
