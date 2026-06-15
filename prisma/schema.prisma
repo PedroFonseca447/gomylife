@@ -11,52 +11,49 @@ generator client {
 
 datasource db {
   provider = "mongodb"
+  url      = env("DATABASE_URL")
 }
 
-
-model Tournament{
-  id String @id @map("_id") @db.ObjectId
-  name String
+model Tournament {
+  id      String @id @map("_id") @db.ObjectId
+  name    String
   country String
-  games Game[]
+  games   Game[]
 }
-
-
 
 model Player {
-  id String @id @map("_id") @db.ObjectId
-  name String
-  totalGoals Int @default(0)
-  totalYellowCards Int @default(0)
-  totalRedCards Int @default(0)
-  totalAssists Int @default(0)
-  squads SquadPlayer[]
+  id               String        @id @map("_id") @db.ObjectId
+  name             String
+  totalGoals       Int           @default(0)
+  totalYellowCards Int           @default(0)
+  totalRedCards    Int           @default(0)
+  totalAssists     Int           @default(0)
+  squads           SquadPlayer[]
 }
 
-
-model Game{
-  id String @id @map("_id") @db.ObjectId
-  data String
-  tournamentId String @db.ObjectId
+model Game {
+  id           String     @id @map("_id") @db.ObjectId
+  data         String
+  tournamentId String     @db.ObjectId
   tournament   Tournament @relation(fields: [tournamentId], references: [id])
   homeTeamName String
   awayTeamName String
-  stadiumName String
-  homeScore Int @default(0)
-  awayScore Int @default(0)
-  homeSquadId String @db.ObjectId
-  homeSquad   Squad  @relation("HomeSquad", fields: [homeSquadId], references: [id])
+  stadiumName  String
+  homeScore    Int        @default(0)
+  awayScore    Int        @default(0)
+  homeSquadId  String     @db.ObjectId
+  homeSquad    Squad      @relation("HomeSquad", fields: [homeSquadId], references: [id])
 
   awaySquadId String @db.ObjectId
   awaySquad   Squad  @relation("AwaySquad", fields: [awaySquadId], references: [id])
 }
 
-model Squad{
-    id String @id @default(auto()) @map("_id") @db.ObjectId
-    reference String
-    homeSquadGame Game[] @relation("HomeSquad")
-    awaySquadGame Game[] @relation("AwaySquad") // na parte de relacoes para indicar que o jogo possui 2 quasd diferentes
-    players SquadPlayer[]
+model Squad {
+  id            String        @id @default(auto()) @map("_id") @db.ObjectId
+  reference     String
+  homeSquadGame Game[]        @relation("HomeSquad")
+  awaySquadGame Game[]        @relation("AwaySquad") // na parte de relacoes para indicar que o jogo possui 2 quasd diferentes
+  players       SquadPlayer[]
 }
 
 // Model intermediario da relacao N:N entre Squad e Player.
@@ -64,14 +61,14 @@ model Squad{
 // e aqui fica facil guardar dados dessa participacao, como numero da camisa,
 // posicao, titular/reserva ou estatisticas daquele jogador naquele squad.
 model SquadPlayer {
-    id String @id @default(auto()) @map("_id") @db.ObjectId
+  id String @id @default(auto()) @map("_id") @db.ObjectId
 
-    squadId String @db.ObjectId
-    squad Squad @relation(fields: [squadId], references: [id])
+  squadId String @db.ObjectId
+  squad   Squad  @relation(fields: [squadId], references: [id])
 
-    playerId String @db.ObjectId
-    player Player @relation(fields: [playerId], references: [id])
+  playerId String @db.ObjectId
+  player   Player @relation(fields: [playerId], references: [id])
 
-    shirtNumber Int?
-    position String?
+  shirtNumber Int?
+  position    String?
 }
