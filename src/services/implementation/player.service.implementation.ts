@@ -1,5 +1,6 @@
 import type { PlayerRepository } from "../../repositories/player.repository.js";
 import type { PlayerGameStatsDTO, PlayerService, PlayerStatsDTO } from "../player.service.js";
+import { Player } from "../../entities/player.js";
 
 export class PlayerServiceImplementation implements PlayerService{
    private constructor(readonly repository: PlayerRepository){
@@ -33,11 +34,13 @@ export class PlayerServiceImplementation implements PlayerService{
             totalYellowCards: player.totalYellowCards,
             totalRedCards: player.totalRedCards,
             totalAssists: player.totalAssists,
+            position: player.position,
+            shirtNumber: player.shirtNumber,
         }));
    };
 
-   public async getPlayer(id: string): Promise<PlayerStatsDTO | null>{
-        const player = await this.repository.find(id);
+   public async getPlayerStats(id: string): Promise<PlayerStatsDTO | null> {
+        const player = await this.repository.find(id); 
 
         if(!player){
             return null;
@@ -50,8 +53,28 @@ export class PlayerServiceImplementation implements PlayerService{
             totalYellowCards: player.totalYellowCards,
             totalRedCards: player.totalRedCards,
             totalAssists: player.totalAssists,
+            position: player.position,
+            shirtNumber: player.shirtNumber,
         };
    };
 
-   
+
+   public async addPlayer(player: PlayerStatsDTO): Promise<void> {
+        const aPlayer = await this.repository.find(player.id);
+
+        if(aPlayer){
+            return;
+        }
+
+        const newPlayer = Player.create(player.id,
+            player.name,
+            player.position,
+             player.shirtNumber,
+        );
+
+        await this.repository.save(newPlayer);
+
+
+    }
+
 }

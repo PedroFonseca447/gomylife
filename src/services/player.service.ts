@@ -16,7 +16,16 @@ export type PlayerStatsDTO = {
     shirtNumber: number;
 }
 
+export type PlayerCreateDTO = {
+    id: string;
+    name: string;
+    position: string;
+    shirtNumber: number;
+}
+
 export interface PlayerService{
     addStatsByPlayer(id: string, stats: PlayerGameStatsDTO): Promise<void>;
     list(): Promise<PlayerStatsDTO[]>;
+    getPlayerStats(id: string): Promise<PlayerStatsDTO | null>;
+    addPlayer(player: PlayerCreateDTO): Promise<void>;
 }

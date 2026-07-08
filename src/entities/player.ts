@@ -5,6 +5,8 @@ export type PlayerProps = {
   totalYellowCards: number;
   totalRedCards: number;
   totalAssists: number;
+  position: string;
+  shirtNumber: number;
 };
 
 export type PlayerGameStats = {
@@ -17,7 +19,7 @@ export type PlayerGameStats = {
 export class Player {
   private constructor(readonly props: PlayerProps) {}
 
-  public static create(id: string, name: string) {
+  public static create(id: string, name: string, position: string, shirtNumber: number) {
     return new Player({
       id,
       name,
@@ -25,6 +27,8 @@ export class Player {
       totalYellowCards: 0,
       totalRedCards: 0,
       totalAssists: 0,
+      position: position,
+      shirtNumber: shirtNumber,
     });
   }
 
@@ -54,6 +58,22 @@ export class Player {
 
   public get totalAssists() {
     return this.props.totalAssists;
+  }
+
+  public get position() {
+    return this.props.position;
+  }
+
+  public get shirtNumber() {
+    return this.props.shirtNumber;
+  }
+
+  public set position(position: string) {
+    this.props.position = position;
+  }
+
+  public set shirtNumber(shirtNumber: number) {
+    this.props.shirtNumber = shirtNumber;
   }
 
   public addGameStats(stats: PlayerGameStats) {
