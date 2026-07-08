@@ -12,6 +12,8 @@ export type PlayerStatsDTO = {
     totalYellowCards: number;
     totalRedCards: number;
     totalAssists: number;
+    position: string;
+    shirtNumber: number;
 }
 
 export interface PlayerService{

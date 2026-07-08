@@ -1,5 +1,6 @@
 import type { TournamentDTO,  TournamentService} from "../tournament.service.js";
 import type { TournamentRepository } from "../../repositories/tournament.repository.js";
+import { Tournament } from "../../entities/tournament.js";
 export class TournamentServiceImplementation implements TournamentService {
     private constructor(readonly repository: TournamentRepository) {}
 
@@ -16,5 +17,24 @@ export class TournamentServiceImplementation implements TournamentService {
         }));
         
         return mappedTournaments;
-}
+    }
+
+    public async addTournament(name: string, country: string, id: string): Promise<void> {
+       
+       const newTournament =  Tournament.create(id, name, country);
+       await this.repository.save(newTournament);
+        
+    }
+
+    public async getTournament(id: string): Promise<TournamentDTO | null> {
+        const tournament = await this.repository.find(id);
+        if (!tournament) {
+            return null;
+        }
+        return {
+            id: tournament.id,
+            name: tournament.name,
+            country: tournament.country,
+        };
+    }
 }

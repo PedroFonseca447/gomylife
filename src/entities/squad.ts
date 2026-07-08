@@ -1,5 +1,6 @@
 export type SquadPlayerProps = {
     playerId: string,
+    playerName: string,
     goalsScored: number,
     assists: number,
     yellowCards: number,

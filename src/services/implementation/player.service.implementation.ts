@@ -35,4 +35,23 @@ export class PlayerServiceImplementation implements PlayerService{
             totalAssists: player.totalAssists,
         }));
    };
+
+   public async getPlayer(id: string): Promise<PlayerStatsDTO | null>{
+        const player = await this.repository.find(id);
+
+        if(!player){
+            return null;
+        }
+
+        return {
+            id: player.id,
+            name: player.name,
+            totalGoals: player.totalGoals,
+            totalYellowCards: player.totalYellowCards,
+            totalRedCards: player.totalRedCards,
+            totalAssists: player.totalAssists,
+        };
+   };
+
+   
 }
