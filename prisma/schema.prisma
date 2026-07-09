@@ -15,6 +15,7 @@ datasource db {
 }
 
 model Tournament {
+  @@map("tournaments")
   id      String @id @map("_id") @db.ObjectId
   name    String
   country String
@@ -22,6 +23,7 @@ model Tournament {
 }
 
 model Player {
+  @@map("players")
   id               String        @id @map("_id") @db.ObjectId
   name             String
   totalGoals       Int           @default(0)
@@ -32,6 +34,7 @@ model Player {
 }
 
 model Game {
+  @@map("games")
   id           String     @id @map("_id") @db.ObjectId
   data         String
   tournamentId String     @db.ObjectId
@@ -49,6 +52,7 @@ model Game {
 }
 
 model Squad {
+  @@map("squads")
   id            String        @id @default(auto()) @map("_id") @db.ObjectId
   reference     String
   homeSquadGame Game[]        @relation("HomeSquad")
