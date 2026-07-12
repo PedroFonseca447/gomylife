@@ -27,7 +27,7 @@ export class TournamentServiceImplementation implements TournamentService {
     }
 
     public async getTournament(id: string): Promise<TournamentDTO | null> {
-        const tournament = await this.repository.find(id);
+        const tournament = await this.repository.find(id, false);
         if (!tournament) {
             return null;
         }

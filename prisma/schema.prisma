@@ -45,15 +45,15 @@ model Game {
   homeScore    Int        @default(0)
   awayScore    Int        @default(0)
   homeSquadId  String     @db.ObjectId
-  homeSquad    Squad      @relation("HomeSquad", fields: [homeSquadId], references: [id])
+  homeSquad    Squad      @relation("HomeSquad", fields: [homeSquadId], references: [gameId])
 
   awaySquadId String @db.ObjectId
-  awaySquad   Squad  @relation("AwaySquad", fields: [awaySquadId], references: [id])
+  awaySquad   Squad  @relation("AwaySquad", fields: [awaySquadId], references: [gameId])
 }
 
 model Squad {
   @@map("squads")
-  id            String        @id @default(auto()) @map("_id") @db.ObjectId
+  gameId            String        @id @default(auto()) @map("_id") @db.ObjectId
   reference     String
   homeSquadGame Game[]        @relation("HomeSquad")
   awaySquadGame Game[]        @relation("AwaySquad") // na parte de relacoes para indicar que o jogo possui 2 quasd diferentes
@@ -68,11 +68,15 @@ model SquadPlayer {
   id String @id @default(auto()) @map("_id") @db.ObjectId
 
   squadId String @db.ObjectId
-  squad   Squad  @relation(fields: [squadId], references: [id])
+  squad   Squad  @relation(fields: [squadId], references: [gameId])
 
   playerId String @db.ObjectId
   player   Player @relation(fields: [playerId], references: [id])
 
   shirtNumber Int?
   position    String?
+  goalsScored Int @default(0)
+  assists     Int @default(0)
+  yellowCards Int @default(0)
+  redCards    Int @default(0)
 }

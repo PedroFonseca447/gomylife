@@ -4,5 +4,5 @@ export interface TournamentRepository{
     save(tournament: Tournament): Promise<void>;
     list(): Promise<Tournament[]>;
     update(tournament: Tournament): Promise<void>;
-    find(id: string): Promise<Tournament | undefined>;
+    find(id: string, needId: boolean): Promise<Tournament | undefined>;
 }

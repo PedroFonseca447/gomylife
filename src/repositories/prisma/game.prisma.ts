@@ -1,4 +1,4 @@
-import type { PrismaClient } from "@prisma/client";
+import type { PrismaClient } from "../../generated/prisma/client.js";
 import type { Game } from "../../entities/game";
 import type { GameRepository } from "../game.repository";
 
