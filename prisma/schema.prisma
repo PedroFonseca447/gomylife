@@ -45,19 +45,22 @@ model Game {
   homeScore    Int        @default(0)
   awayScore    Int        @default(0)
   homeSquadId  String     @db.ObjectId
-  homeSquad    Squad      @relation("HomeSquad", fields: [homeSquadId], references: [gameId])
+  homeSquad    Squad      @relation("HomeSquad", fields: [homeSquadId], references: [id])
 
   awaySquadId String @db.ObjectId
-  awaySquad   Squad  @relation("AwaySquad", fields: [awaySquadId], references: [gameId])
+  awaySquad   Squad  @relation("AwaySquad", fields: [awaySquadId], references: [id])
 }
 
 model Squad {
   @@map("squads")
-  gameId            String        @id @default(auto()) @map("_id") @db.ObjectId
-  reference     String
+  id                String        @id @default(auto()) @map("_id") @db.ObjectId
+  gameId            String        @db.ObjectId
+  reference         String
   homeSquadGame Game[]        @relation("HomeSquad")
   awaySquadGame Game[]        @relation("AwaySquad") // na parte de relacoes para indicar que o jogo possui 2 quasd diferentes
   players       SquadPlayer[]
+
+  @@unique([gameId, reference])
 }
 
 // Model intermediario da relacao N:N entre Squad e Player.
@@ -68,7 +71,7 @@ model SquadPlayer {
   id String @id @default(auto()) @map("_id") @db.ObjectId
 
   squadId String @db.ObjectId
-  squad   Squad  @relation(fields: [squadId], references: [gameId])
+  squad   Squad  @relation(fields: [squadId], references: [id])
 
   playerId String @db.ObjectId
   player   Player @relation(fields: [playerId], references: [id])
