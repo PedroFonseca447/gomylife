@@ -14,6 +14,9 @@ export type GameProps = {
   awaySquad: SquadProps;
 };
 
+
+//Essa classe posui alguns atributos
+
 export class Game {
   private constructor(readonly props: GameProps) {
     // essa classe so possui um atribuito de props que é tipado por gameprops

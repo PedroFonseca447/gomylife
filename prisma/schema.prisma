@@ -24,14 +24,90 @@ model Tournament {
 
 model Player {
   @@map("players")
-  id               String        @id @map("_id") @db.ObjectId
+  idPlayer         String        @id @map("_id") @db.ObjectId
   name             String
   totalGoals       Int           @default(0)
   totalYellowCards Int           @default(0)
   totalRedCards    Int           @default(0)
   totalAssists     Int           @default(0)
-  squads           SquadPlayer[]
+
+  partidas DataPlayerMatch[]
 }
+model Squad {
+  @@map("squads")
+  idSquad           String        @id @default(auto()) @map("_id") @db.ObjectId
+  reference         String
+  players DataPlayerMatch[]
+
+  
+  gameId String @unique @db.ObjectId
+  game Game @relation(fields: [gameId], references: [id]) // um squad com todos jogadores dos 2 lados, fica registrado no banco 
+
+}
+
+// Model intermediario da relacao N:N entre Squad e Player.
+// Usei ele em vez de String[] porque o mesmo jogador pode aparecer em varios squads
+// e aqui fica facil guardar dados dessa participacao, como numero da camisa,
+// posicao, titular/reserva ou estatisticas daquele jogador naquele squad.
+model DataPlayerMatch {
+  id String @id @default(auto()) @map("_id") @db.ObjectId
+  shirtNumber Int
+  position    String
+  goalsScored Int @default(0)
+  assists     Int @default(0)
+  yellowCards Int @default(0)
+  redCards    Int @default(0)
+  whatSide String  // uma flag que indica a que time eles pertencem 
+
+
+  idPlayer String  @db.ObjectId
+  idSquad String  @db.ObjectId
+
+  //objetos do prisma
+
+  player Player @relation(fields: [idPlayer], references: [idPlayer]) // references conect na table e o fields na tabela de meio termo
+  squad Squad @relation(fields: [idSquad], references: [idSquad])
+
+  @@unique([idPlayer,idSquad]) // na partida o player so pode aparecer uma vez pelo squad
+  @@index([idPlayer])
+  @@index([idSquad])
+}
+
+//a good future idea it's implement some kind of team controller
+// just like the best visitor team or any style of that
+
+
+
+model Team {
+   @@map("teams")
+    id String @id @default(auto()) @map("_id") @db.ObjectId
+    name String
+    color String
+    allTimeScored Int @default(0)
+    allTimeConceded Int @default(0)
+    dataTeamMatches dataTeamMatch[]
+}
+
+
+
+model dataTeamMatch {
+    id String @id @default(auto()) @map("_id") @db.ObjectId
+    side String //quem e o mantande e quem joga fora
+    matchScored Int @default(0)
+    matchConceded Int @default(0)
+
+    idGame String @db.ObjectId
+    idTeam String @db.ObjectId
+
+    game Game @relation(fields: [idGame], references: [id])
+    team Team @relation(fields: [idTeam], references: [id])
+
+  @@unique([idGame,idTeam]) // na partida o player so pode aparecer uma vez pelo squad
+  @@index([idGame])
+  @@index([idTeam])
+
+}
+
 
 model Game {
   @@map("games")
@@ -42,44 +118,11 @@ model Game {
   homeTeamName String
   awayTeamName String
   stadiumName  String
+
+  teams dataTeamMatch[]
+
   homeScore    Int        @default(0)
   awayScore    Int        @default(0)
-  homeSquadId  String     @db.ObjectId
-  homeSquad    Squad      @relation("HomeSquad", fields: [homeSquadId], references: [id])
-
-  awaySquadId String @db.ObjectId
-  awaySquad   Squad  @relation("AwaySquad", fields: [awaySquadId], references: [id])
+  squad Squad?
 }
 
-model Squad {
-  @@map("squads")
-  id                String        @id @default(auto()) @map("_id") @db.ObjectId
-  gameId            String        @db.ObjectId
-  reference         String
-  homeSquadGame Game[]        @relation("HomeSquad")
-  awaySquadGame Game[]        @relation("AwaySquad") // na parte de relacoes para indicar que o jogo possui 2 quasd diferentes
-  players       SquadPlayer[]
-
-  @@unique([gameId, reference])
-}
-
-// Model intermediario da relacao N:N entre Squad e Player.
-// Usei ele em vez de String[] porque o mesmo jogador pode aparecer em varios squads
-// e aqui fica facil guardar dados dessa participacao, como numero da camisa,
-// posicao, titular/reserva ou estatisticas daquele jogador naquele squad.
-model SquadPlayer {
-  id String @id @default(auto()) @map("_id") @db.ObjectId
-
-  squadId String @db.ObjectId
-  squad   Squad  @relation(fields: [squadId], references: [id])
-
-  playerId String @db.ObjectId
-  player   Player @relation(fields: [playerId], references: [id])
-
-  shirtNumber Int?
-  position    String?
-  goalsScored Int @default(0)
-  assists     Int @default(0)
-  yellowCards Int @default(0)
-  redCards    Int @default(0)
-}
