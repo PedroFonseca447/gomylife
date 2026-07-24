@@ -1,7 +1,8 @@
 export type propsTournament = {
     id: string,
     name: string,
-    country: string
+    country: string,
+    year: string
 }
 
 
@@ -9,11 +10,12 @@ export class Tournament{
     private constructor(readonly props: propsTournament){
     }
 
-    public static create(id: string, name: string, country: string){
+    public static create(id: string, name: string, country: string, year: string){
         return new Tournament({
             id,
             name,
-            country
+            country,
+            year
         })
     }
 
@@ -29,5 +31,9 @@ export class Tournament{
     }
     public get country(){
         return this.props.country;
+    }
+
+    public get year(){
+        return this.props.year;
     }
 }
