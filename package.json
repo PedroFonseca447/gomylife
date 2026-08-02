@@ -6,12 +6,16 @@
   "type": "module",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "dev": "ts-node src/main.ts"
+    "dev": "tsx watch src/server.ts",
+    "start": "tsx dist/server.js",
+    "build": "tsc --outDir dist --declaration false --declarationMap false",
+    "typecheck": "tsc --noEmit --declaration false --declarationMap false"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "devDependencies": {
+    "@types/express": "^5.0.6",
     "@types/node": "^25.9.2",
     "prisma": "6.19",
     "ts-node": "^10.9.2",
@@ -19,6 +23,8 @@
   },
   "dependencies": {
     "@prisma/client": "6.19",
-    "dotenv": "^17.4.2"
+    "dotenv": "^17.4.2",
+    "express": "^5.2.1",
+    "tsx": "^4.23.4"
   }
 }

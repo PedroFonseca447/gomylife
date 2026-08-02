@@ -1,74 +1,62 @@
+import { Team } from "../../../entities/team.js";
 import type { PrismaClient } from "../../../generated/prisma/client.js";
-import type { TeamRepository } from "../team.repository";
-import { Team } from "../../../entities/team";
+import type { TeamRepository } from "../team.repository.js";
 
-export class TeamRepositoryPrisma implements TeamRepository{
+export class TeamRepositoryPrisma implements TeamRepository {
+  private constructor(private readonly prisma: PrismaClient) {}
 
+  public static build(prisma: PrismaClient) {
+    return new TeamRepositoryPrisma(prisma);
+  }
 
-    private constructor (readonly prisma: PrismaClient){}
+  public async save(team: Team): Promise<Team> {
+    const saved = await this.prisma.team.upsert({
+      where: { name: team.name },
+      update: {
+        colorPrimary: team.colorPrimary,
+        colorSecondary: team.colorSecondary,
+      },
+      create: {
+        name: team.name,
+        colorPrimary: team.colorPrimary,
+        colorSecondary: team.colorSecondary,
+      },
+    });
+    return Team.restore(saved);
+  }
 
-    public build(prisma: PrismaClient){
-         return new TeamRepositoryPrisma(prisma);
+  public async find(id: string): Promise<Team | null> {
+    const team = await this.prisma.team.findUnique({ where: { id } });
+    return team ? Team.restore(team) : null;
+  }
+
+  public async findByName(name: string): Promise<Team | null> {
+    const team = await this.prisma.team.findUnique({
+      where: { name: name.trim() },
+    });
+    return team ? Team.restore(team) : null;
+  }
+
+  public async list(): Promise<Team[]> {
+    const teams = await this.prisma.team.findMany({ orderBy: { name: "asc" } });
+    return teams.map((team) => Team.restore(team));
+  }
+
+  public async incrementStats(
+    name: string,
+    scored: number,
+    conceded: number,
+  ): Promise<Team> {
+    if (scored < 0 || conceded < 0) {
+      throw new Error("Statistics increment cannot be negative");
     }
-
-    public async save(team: Team): Promise<void>{
-        const newTeam = {
-            id: team.idTeam,
-            name: team.teamName,
-            colorPrimary: team.colorPrimary,
-            colorSecondary: team.colorSecondary,
-            allTimeScored: 0,
-            allTimeConceded: 0,
-        }
-
-        await this.prisma.team.create({
-            data:{
-                id: newTeam.id,
-                name: newTeam.name,
-                colorPrimary: newTeam.colorPrimary,
-                colorSecondary: newTeam.colorSecondary,
-                allTimeScored: newTeam.allTimeScored,
-                allTimeConceded: newTeam.allTimeConceded
-            }
-        })
-    }
-
-    public async find(id: string): Promise<Team | null>{
-
-        if(!id){
-            throw new Error('Adicione um id')
-        }
-
-        const teamFind = await this.prisma.team.findUnique({
-            where:{
-                id: id,
-            }
-        })
-
-        if(!teamFind){
-            return null;
-        }
-
-        const { name, colorPrimary, colorSecondary, allTimeScored, allTimeConceded} = teamFind;
-
-        const team = Team.create(id, name, colorPrimary,colorSecondary,allTimeConceded,allTimeScored)
-    
-        return team;
-
-    }
-
-
-    public async list(): Promise<Team[]>{
-        const allTeamSave = await this.prisma.team.findMany();
-
-        const teams: Team[] = allTeamSave.map((index) => {
-
-            const {id, name, colorPrimary, colorSecondary, allTimeScored, allTimeConceded} = index;
-            
-            return Team.create(id,name,colorPrimary,colorSecondary,allTimeScored,allTimeConceded); 
-        })
-        
-        return teams;
-    }
-    
+    const team = await this.prisma.team.update({
+      where: { name: name.trim() },
+      data: {
+        allTimeScored: { increment: scored },
+        allTimeConceded: { increment: conceded },
+      },
+    });
+    return Team.restore(team);
+  }
 }

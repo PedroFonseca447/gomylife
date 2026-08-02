@@ -1,0 +1,24 @@
+import { Router } from "express";
+import { GameController } from "../controllers/game.controller.js";
+import { TeamController } from "../controllers/team.controller.js";
+import { TournamentController } from "../controllers/tournament.controller.js";
+import { asyncHandler } from "../async-handler.js";
+import { GameRepositoryPrisma } from "../../repositories/product/prisma/game.repository.prisma.js";
+import { TeamRepositoryPrisma } from "../../repositories/product/prisma/team.repository.prisma.js";
+import { TournamentRepositoryPrisma } from "../../repositories/product/prisma/tournament.repository.prisma.js";
+import { prisma } from "../../utils/prisma.client.js";
+const gameController = new GameController(GameRepositoryPrisma.build(prisma));
+const teamController = new TeamController(TeamRepositoryPrisma.build(prisma));
+const tournamentController = new TournamentController(TournamentRepositoryPrisma.build(prisma));
+export const routes = Router();
+routes.post("/games", asyncHandler(gameController.create));
+routes.get("/games", asyncHandler(gameController.list));
+routes.get("/games/:id", asyncHandler(gameController.find));
+routes.delete("/games/:id", asyncHandler(gameController.delete));
+routes.post("/teams", asyncHandler(teamController.create));
+routes.get("/teams", asyncHandler(teamController.list));
+routes.get("/teams/:id", asyncHandler(teamController.find));
+routes.post("/tournaments", asyncHandler(tournamentController.create));
+routes.get("/tournaments", asyncHandler(tournamentController.list));
+routes.get("/tournaments/:id", asyncHandler(tournamentController.find));
+//# sourceMappingURL=index.js.map

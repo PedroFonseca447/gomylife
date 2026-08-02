@@ -1,9 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
 generator client {
   provider = "prisma-client"
   output   = "../src/generated/prisma"
@@ -15,116 +9,56 @@ datasource db {
 }
 
 model Tournament {
-  @@map("tournaments")
-  id      String @id @map("_id") @db.ObjectId
-  name    String
+  id      String @id @default(auto()) @map("_id") @db.ObjectId
+  name    String @unique
   country String
-  year String
+  year    String
   games   Game[]
+
+  @@map("tournaments")
 }
-
-model Player {
-  @@map("players")
-  idPlayer         String        @id @map("_id") @db.ObjectId
-  name             String
-  totalGoals       Int           @default(0)
-  totalYellowCards Int           @default(0)
-  totalRedCards    Int           @default(0)
-  totalAssists     Int           @default(0)
-
-  partidas DataPlayerMatch[]
-}
-model Squad {
-  @@map("squads")
-  idSquad           String        @id @default(auto()) @map("_id") @db.ObjectId
-  reference         String
-  players DataPlayerMatch[]
-
-  
-  gameId String @unique @db.ObjectId
-  game Game @relation(fields: [gameId], references: [id]) // um squad com todos jogadores dos 2 lados, fica registrado no banco 
-
-}
-
-// Model intermediario da relacao N:N entre Squad e Player.
-// Usei ele em vez de String[] porque o mesmo jogador pode aparecer em varios squads
-// e aqui fica facil guardar dados dessa participacao, como numero da camisa,
-// posicao, titular/reserva ou estatisticas daquele jogador naquele squad.
-model DataPlayerMatch {
-  id String @id @default(auto()) @map("_id") @db.ObjectId
-  shirtNumber Int
-  position    String
-  goalsScored Int @default(0)
-  assists     Int @default(0)
-  yellowCards Int @default(0)
-  redCards    Int @default(0)
-  whatSide String  // uma flag que indica a que time eles pertencem 
-
-
-  idPlayer String  @db.ObjectId
-  idSquad String  @db.ObjectId
-
-  //objetos do prisma
-
-  player Player @relation(fields: [idPlayer], references: [idPlayer]) // references conect na table e o fields na tabela de meio termo
-  squad Squad @relation(fields: [idSquad], references: [idSquad])
-
-  @@unique([idPlayer,idSquad]) // na partida o player so pode aparecer uma vez pelo squad
-  @@index([idPlayer])
-  @@index([idSquad])
-}
-
-//a good future idea it's implement some kind of team controller
-// just like the best visitor team or any style of that
-
-
 
 model Team {
-   @@map("teams")
-    id String @id @default(auto()) @map("_id") @db.ObjectId
-    name String
-    colorPrimary String
-    colorSecondary String
-    allTimeScored Int @default(0)
-    allTimeConceded Int @default(0)
-    dataTeamMatches dataTeamMatch[]
+  id                 String          @id @default(auto()) @map("_id") @db.ObjectId
+  name               String          @unique
+  colorPrimary       String
+  colorSecondary     String
+  allTimeScored      Int             @default(0)
+  allTimeConceded    Int             @default(0)
+  gameParticipations DataTeamMatch[]
+
+  @@map("teams")
 }
-
-
-
-model dataTeamMatch {
-    id String @id @default(auto()) @map("_id") @db.ObjectId
-    side String //quem e o mantande e quem joga fora
-    matchScored Int @default(0)
-    matchConceded Int @default(0)
-
-    idGame String @db.ObjectId
-    idTeam String @db.ObjectId
-
-    game Game @relation(fields: [idGame], references: [id])
-    team Team @relation(fields: [idTeam], references: [id])
-
-  @@unique([idGame,idTeam]) // na partida o mesmo time so pode aparecer uma vez
-  @@index([idGame])
-  @@index([idTeam])
-
-}
-
 
 model Game {
+  id          String   @id @default(auto()) @map("_id") @db.ObjectId
+  date        DateTime
+  stadiumName String
+  homeScore   Int      @default(0)
+  awayScore   Int      @default(0)
+
+  tournamentId String          @db.ObjectId
+  tournament   Tournament      @relation(fields: [tournamentId], references: [id])
+  teams        DataTeamMatch[]
+
+  @@index([tournamentId])
   @@map("games")
-  id           String     @id @map("_id") @db.ObjectId
-  data         String
-  tournamentId String     @db.ObjectId
-  tournament   Tournament @relation(fields: [tournamentId], references: [id])
-  homeTeamName String
-  awayTeamName String
-  stadiumName  String
-
-  teams dataTeamMatch[]
-
-  homeScore    Int        @default(0)
-  awayScore    Int        @default(0)
-  squad Squad?
 }
 
+model DataTeamMatch {
+  id            String @id @default(auto()) @map("_id") @db.ObjectId
+  side          String
+  matchScored   Int    @default(0)
+  matchConceded Int    @default(0)
+
+  gameId String @db.ObjectId
+  game   Game   @relation(fields: [gameId], references: [id])
+
+  teamId String @db.ObjectId
+  team   Team   @relation(fields: [teamId], references: [id])
+
+  @@unique([gameId, teamId])
+  @@index([gameId])
+  @@index([teamId])
+  @@map("data_team_matches")
+}
