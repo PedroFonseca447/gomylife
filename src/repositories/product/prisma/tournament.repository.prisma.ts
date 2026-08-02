@@ -1,15 +1,15 @@
 //aqui se implementa o basico de um repositorio para uma tabela
 // seu update, delete, create e get JEHEHEH, nada de regra de negocio paenas o que é necessário
 import type { PrismaClient } from "../../../generated/prisma/client.js";
-import type { TournamentRepository } from "../tournament.repository";
 import { Tournament } from "../../../entities/tournament";
+import type { TournamentRepository } from "../tournament.repository.js";
 
 
 export class TournamentRepositoryPrisma implements TournamentRepository{
 
     private constructor(readonly prisma: PrismaClient){}
 
-    public build(prisma : PrismaClient){
+    public static build(prisma : PrismaClient){
         return new TournamentRepositoryPrisma(prisma);
     }
 
@@ -43,7 +43,7 @@ export class TournamentRepositoryPrisma implements TournamentRepository{
 
        const allTournaments: Tournament[] = allTournamentsList.map((index) => { // todo esse malabariosm e para arrumar a classe de torneio
             const {id, name, year, country} = index; 
-            return Tournament.create(id,name,year,country);
+            return Tournament.restore({ id, name, country, year });
        })
 
 
@@ -51,6 +51,13 @@ export class TournamentRepositoryPrisma implements TournamentRepository{
        return allTournaments;
     }
 
+    public async findByIdentity(name: string, country: string, year: string): Promise<Tournament | null> {
+       const tournament = await this.prisma.tournament.findFirst({
+            where: { name, country, year }
+       });
+
+       return tournament ? Tournament.restore(tournament) : null;
+    }
     public async find(id: string): Promise<Tournament | null>{
        if(!id){
             throw new Error("Adicione um id valido")
@@ -68,7 +75,7 @@ export class TournamentRepositoryPrisma implements TournamentRepository{
 
        const { name, year, country} = tournamentConsult;
 
-       const tournamentObj = Tournament.create(id,name,year,country)
+       const tournamentObj = Tournament.restore({ id, name, country, year })
 
        return tournamentObj
     }

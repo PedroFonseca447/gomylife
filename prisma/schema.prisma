@@ -37,9 +37,7 @@ model Player {
 model Squad {
   @@map("squads")
   idSquad           String        @id @default(auto()) @map("_id") @db.ObjectId
-  reference         String
   players DataPlayerMatch[]
-
   
   gameId String @unique @db.ObjectId
   game Game @relation(fields: [gameId], references: [id]) // um squad com todos jogadores dos 2 lados, fica registrado no banco 
@@ -114,11 +112,11 @@ model dataTeamMatch {
 model Game {
   @@map("games")
   id           String     @id @map("_id") @db.ObjectId
-  data         String
+  date         String
   tournamentId String     @db.ObjectId
   tournament   Tournament @relation(fields: [tournamentId], references: [id])
-  homeTeamName String
-  awayTeamName String
+  homeTeamId String
+  awayTeamId String
   stadiumName  String
 
   teams dataTeamMatch[]

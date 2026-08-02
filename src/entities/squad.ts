@@ -1,43 +1,40 @@
 export type SquadPlayerProps = {
-    playerId: string,
-    playerName: string,
-    goalsScored: number,
-    assists: number,
-    yellowCards: number,
-    redCards: number,
-    shirtNumber: number,
-    position: string,
-}
+  idPlayer: string;
+  goalsScored: number;
+  assists: number;
+  yellowCards: number;
+  redCards: number;
+  shirtNumber: number;
+  position: string;
+  whatSide: string;
+};
 
-export type SquadProps ={
-    reference: "home" | "away",
-    gameId: string,
-    playersSquad: SquadPlayerProps[],
-}
+export type SquadProps = {
+  squadId?: string;
+  gameId: string;
+  players: SquadPlayerProps[];
+};
 
-export class Squad{
-    private constructor(readonly props: SquadProps){
-    }
+export class Squad {
+  private constructor(readonly props: SquadProps) {}
 
-    public static create(reference: "home" | "away", gameId: string, playersSquad: SquadPlayerProps[]){
-        return new Squad({
-            reference,
-            gameId,
-            playersSquad,
-        })
-    }
+  public static create(gameId: string, players: SquadPlayerProps[]) {
+    return new Squad({ gameId, players });
+  }
 
-    public static restore(props: SquadProps){
-        return new Squad(props);
-    }
+  public static restore(props: SquadProps) {
+    return new Squad(props);
+  }
 
-    public get reference(){
-        return this.props.reference;
-    }
-    public get gameId(){
-        return this.props.gameId;
-    }
-    public get playersSquad(){
-        return this.props.playersSquad;
-    }
+  public get squadId() {
+    return this.props.squadId;
+  }
+
+  public get gameId() {
+    return this.props.gameId;
+  }
+
+  public get players() {
+    return this.props.players;
+  }
 }

@@ -13,7 +13,7 @@ type PlayerRecord = {
 export class PlayerRepositoryPrisma implements PlayerRepository {
   private constructor(readonly prisma: PrismaClient) {}
 
-  public build(prisma: PrismaClient) {
+  public static build(prisma: PrismaClient) {
     return new PlayerRepositoryPrisma(prisma);
   }
 
@@ -77,6 +77,20 @@ export class PlayerRepositoryPrisma implements PlayerRepository {
     return players;
   }
 
+  public async findByName(name: string): Promise<Player | null> {
+    const player = await this.prisma.player.findFirst({ where: { name } });
+
+    return player
+      ? Player.restore({
+          id: player.idPlayer,
+          name: player.name,
+          totalGoals: player.totalGoals,
+          totalYellowCards: player.totalYellowCards,
+          totalRedCards: player.totalRedCards,
+          totalAssists: player.totalAssists,
+        })
+      : null;
+  }
   public async find(id: string): Promise<Player | null> {
     const playerExist = await this.prisma.player.findUnique({
       where: {
@@ -84,42 +98,77 @@ export class PlayerRepositoryPrisma implements PlayerRepository {
       },
     });
 
-    if(!playerExist){
-        return null;
+    if (!playerExist) {
+      return null;
     }
 
-    const {name, totalGoals, totalAssists, totalRedCards, totalYellowCards} = playerExist;
+    const { name, totalGoals, totalAssists, totalRedCards, totalYellowCards } =
+      playerExist;
 
-    const player =  Player.restore({id,name,totalGoals,totalAssists,totalRedCards,totalYellowCards})
+    const player = Player.restore({
+      id,
+      name,
+      totalGoals,
+      totalAssists,
+      totalRedCards,
+      totalYellowCards,
+    });
 
     return player;
   }
 
-  public async update(id: string, player: Player) {
-
+  public async update(
+    id: string,
+    name?: string,
+    totalGoals?: number,
+    totalAssists?: number,
+    totalRedCards?: number,
+    totalYellowCards?: number,
+  ) {
     const playerExist = await this.prisma.player.findUnique({
       where: {
         idPlayer: id,
       },
     });
 
-    if(!playerExist){
-        throw new Error("This player doesn't exist to update them")
+    if (!playerExist) {
+      throw new Error("This player doesn't exist to update them");
     }
 
+    const data: {
+      name?: string;
+      totalGoals?: number;
+      totalAssists?: number;
+      totalRedCards?: number;
+      totalYellowCards?: number;
+    } = {};
+
+
+    if(name !== undefined){
+        data.name = name
+    }
+
+    if(totalGoals !== undefined){
+        data.totalGoals = totalGoals
+    }
+
+    if(totalAssists !== undefined){
+        data.totalAssists = totalAssists
+    }
+
+    if(totalRedCards !== undefined){
+        data.totalRedCards = totalRedCards
+    }
+
+    if(totalYellowCards !== undefined){
+        data.totalYellowCards = totalYellowCards
+    }
 
     await this.prisma.player.update({
-        where:{
-            idPlayer: id,
-        },
-        data:{
-            name: player.name,
-            totalGoals: player.totalGoals,
-            totalAssists: player.totalAssists,
-            totalRedCards: player.totalRedCards,
-            totalYellowCards: player.totalYellowCards
-        }
-    })
-
+      where: {
+        idPlayer: id,
+      },
+      data,
+    });
   }
 }

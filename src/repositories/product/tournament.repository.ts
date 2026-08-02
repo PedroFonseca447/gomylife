@@ -11,7 +11,8 @@ import { Tournament } from "../../entities/tournament"
 
 export interface TournamentRepository{
     save(tournament: Tournament): Promise<void>;//assincrono
-    list(): Promise<Tournament[]>; // retorna um objeto de torneio 
-    find(id: string): Promise<Tournament | null>; // aqui nao precisamos de muito, como
+    list(): Promise<Tournament[]>; // retorna uma lista objetosd de torneio 
+    find(id: string): Promise<Tournament | null>;
+    findByIdentity(name: string, country: string, year: string): Promise<Tournament | null>; // aqui nao precisamos de muito, como
     //nossos torneios sao bemm simples. com nennuma regra especifica podemos so comuniar ele em repositories
 }

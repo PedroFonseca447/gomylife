@@ -1,50 +1,57 @@
 import type { SquadProps } from "./squad.js";
-import type { propsTournament } from "./tournament.js";
 
 export type GameProps = {
   id: string;
-  data: string;
-  tournamentObject: propsTournament;
-  homeTeamName: string;
-  awayTeamName: string;
+  date: string;
+  tournamentId: string;
+  homeTeamId: string;
+  awayTeamId: string;
   stadiumName: string;
+  teams: TeamGameData[];
   homeScore: number;
   awayScore: number;
-  homeSquad: SquadProps;
-  awaySquad: SquadProps;
+  squads: SquadProps;
 };
+
+export type TeamGameData = {
+    side: string,
+    matchScored: number,
+    matchConceded: number,
+    idGame: string, 
+    idTeam: string
+}
 
 
 //Essa classe posui alguns atributos
 
 export class Game {
+
   private constructor(readonly props: GameProps) {
     // essa classe so possui um atribuito de props que é tipado por gameprops
   }
 
   public static create(
-    data: string,
-    tournamentObject: propsTournament,
-    homeTeamName: string,
-    awayTeamName: string,
+    date: string,
+    tournamentId: string,
+    homeTeamId: string,
+    awayTeamId: string,
     stadiumName: string,
+    teams: TeamGameData[],
     homeScore: number,
     awayScore: number,
-    homeSquad: SquadProps,
-    awaySquad: SquadProps,
-    
+    squads: SquadProps,
   ) {
     return new Game({
       id: crypto.randomUUID().toString(),
-      data,
-      tournamentObject,
-      homeTeamName,
-      awayTeamName,
+      date,
+      tournamentId,
+      homeTeamId,
+      awayTeamId,
       stadiumName,
+      teams,
       homeScore,
       awayScore,
-      homeSquad,
-      awaySquad,
+      squads
     });
   }
 
@@ -56,24 +63,21 @@ export class Game {
     return this.props.id;
   }
 
-  public get data() {
-    return this.props.data;
+  public get date() {
+    return this.props.date;
   }
 
-  public get tournamentObject() {
-    return this.props.tournamentObject;
+  public get tournamentId() {
+    return this.props.tournamentId;
   }
 
-  public get tournamentName(){
-    return this.props.tournamentObject.name
+
+  public get homeTeamId() {
+    return this.props.homeTeamId;
   }
 
-  public get homeTeamName() {
-    return this.props.homeTeamName;
-  }
-
-  public get awayTeamName() {
-    return this.props.awayTeamName;
+  public get awayTeamId() {
+    return this.props.awayTeamId;
   }
 
   public get stadiumName() {
@@ -88,11 +92,11 @@ export class Game {
     return this.props.awayScore;
   }
 
-  public get homeSquad(){
-    return this.props.homeSquad;
+  public get teams() {
+    return this.props.teams;
   }
 
-  public get awaySquad(){
-    return this.props.awaySquad;
+  public get squad() {
+    return this.props.squads;
   }
 }

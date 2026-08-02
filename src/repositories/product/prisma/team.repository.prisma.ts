@@ -7,7 +7,7 @@ export class TeamRepositoryPrisma implements TeamRepository{
 
     private constructor (readonly prisma: PrismaClient){}
 
-    public build(prisma: PrismaClient){
+    public static build(prisma: PrismaClient){
          return new TeamRepositoryPrisma(prisma);
     }
 
@@ -33,6 +33,10 @@ export class TeamRepositoryPrisma implements TeamRepository{
         })
     }
 
+    public async findByName(name: string): Promise<Team | null> {
+        const team = await this.prisma.team.findFirst({ where: { name } });
+        return team ? Team.restore(team) : null;
+    }
     public async find(id: string): Promise<Team | null>{
 
         if(!id){
@@ -51,7 +55,7 @@ export class TeamRepositoryPrisma implements TeamRepository{
 
         const { name, colorPrimary, colorSecondary, allTimeScored, allTimeConceded} = teamFind;
 
-        const team = Team.create(id, name, colorPrimary,colorSecondary,allTimeConceded,allTimeScored)
+        const team = Team.restore({ id, name, colorPrimary, colorSecondary, allTimeScored, allTimeConceded })
     
         return team;
 
@@ -69,6 +73,64 @@ export class TeamRepositoryPrisma implements TeamRepository{
         })
         
         return teams;
+    }
+
+    public async update( id: string,name?: string, colorPrimary?: string, colorSecondary?: string, allTimeScored?: number, allTimeConceded?: number ): Promise<void> {
+        
+        if(!id){
+            throw new Error("Please insert a valid id team")
+        }
+
+        const existTeam = await this.prisma.team.findUnique({
+            where:{
+                id: id,
+            }
+        })
+
+        if(!existTeam){
+            throw new Error("This team doesn't exist");
+        }
+
+        const data: {
+            name?: string,
+            colorPrimary?: string,
+            colorSecondary?: string,
+            allTimeScored?: number,
+            allTimeConceded?: number
+        } = {};
+
+
+        if(name !== undefined){
+            data.name = name;
+        }
+
+
+        if (colorPrimary !== undefined) {
+        data.colorPrimary = colorPrimary;
+        }
+
+        if (colorSecondary !== undefined) {
+        data.colorSecondary = colorSecondary;
+        }
+
+        if (allTimeScored !== undefined) {
+        data.allTimeScored = allTimeScored;
+        }
+
+        if (allTimeConceded !== undefined) {
+        data.allTimeConceded = allTimeConceded;
+        }
+       
+        
+        await this.prisma.team.update({
+            where: {
+                id: id, 
+            },
+            data
+        })
+
+        
+
     }
     
 }
